@@ -22,16 +22,11 @@ async function bootstrap() {
   ];
 
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        return callback(null, true);
-      } else {
-        return callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: allowedOrigins, // ◄ NestJS maneja el array nativamente de forma más segura
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'], // ◄ Agregamos OPTIONS explícito
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204, // ◄ Le responde un 204 limpio al navegador en el preflight
   });
 
   app.useGlobalPipes(new ValidationPipe());
