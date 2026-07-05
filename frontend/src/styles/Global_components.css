@@ -3,9 +3,9 @@
 /* ========================================================================= */
 :root {
     /* Fondos y Superficies */
-    --primary-color: #1a1a1b;
+    --primary-color: #161619;
     /* Fondo principal (Header, Nav) */
-    --background-color: #1F1F20;
+    --background-color: #0D0D0E;
     /* Fondo de la página */
     --hover-color: #232324;
     /* Fondo de hover en oscuro */
@@ -20,11 +20,11 @@
     --container-color-gradient: linear-gradient(90deg, #1e1e1f, #252526, #1e1e1f);
 
     /* Texto y Bordes */
-    --text-color: #777878;
+    --text-color: #FAFAFA;
     /* Color de texto principal (gris claro) */
     --border-color: #2d2d2e;
     /* Color de bordes y separadores */
-    --border-container-color: #3a3a3a;
+    --border-container-color: #26262B;
     /* Borde más oscuro para contraste */
 
   /* Botones y Acento */
