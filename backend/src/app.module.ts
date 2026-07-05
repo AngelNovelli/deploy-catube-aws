@@ -43,7 +43,8 @@ import { WatchLater } from './users/entities/watch-later.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['config.env'],
+      envFilePath: ['.env', 'config.env'],
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
       isGlobal: true,
     }),
 
