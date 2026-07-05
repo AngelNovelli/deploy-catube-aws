@@ -23,6 +23,10 @@ ffmpeg.setFfprobePath(ffprobeStatic.path);
 export class VideosService {
   private readonly s3Client;
 
+  // --- URLs de Miniatura por Defecto Globales ---
+  private readonly DEFAULT_VIDEO_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-video-thumbnail.png';
+  private readonly DEFAULT_SHORT_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-short-thumbnail.png';
+
   constructor(
     @InjectRepository(Video)
     private readonly videoRepository: Repository<Video>,
@@ -31,7 +35,6 @@ export class VideosService {
     @InjectRepository(Subscription)
     private subscriptionsRepository: Repository<Subscription>,
     private notificationsService: NotificationsService,
-
   ) {
     console.log("Control de credenciales Supabase:", {
       hasAccessKey: !!process.env.SUPABASE_ACCESS_KEY_ID,
@@ -42,14 +45,13 @@ export class VideosService {
 
     this.s3Client = new S3Client({
       region: process.env.SUPABASE_REGION || 'us-east-1',
-      endpoint: process.env.SUPABASE_ENDPOINT, // Tu URL de la API S3 de Supabase
+      endpoint: process.env.SUPABASE_ENDPOINT,
       credentials: {
         accessKeyId: process.env.SUPABASE_ACCESS_KEY_ID || '',
         secretAccessKey: process.env.SUPABASE_SECRET_ACCESS_KEY || '',
       },
       forcePathStyle: true,
     });
-
   }
 
   // ======================================================
@@ -62,7 +64,6 @@ export class VideosService {
     const channel = user.channel;
     if (!channel) throw new NotFoundException(`Channel not found for user ${userId}`);
 
-    // Create initial video record
     const newVideo = this.videoRepository.create({
       ...createVideoDto,
       channel,
@@ -71,7 +72,7 @@ export class VideosService {
       url: '',
       thumbnail: '',
       duration: 0,
-      type: 'video' // Default
+      type: 'video'
     });
 
     await this.videoRepository.save(newVideo);
@@ -86,13 +87,7 @@ export class VideosService {
   async processVideo(videoId: string, files: Express.Multer.File[]) {
     console.log(`LOG: Iniciando procesamiento de fondo para video ${videoId}`);
 
-    // --- URLs de Miniatura por Defecto ---
-    const DEFAULT_VIDEO_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-video-thumbnail.png';
-    const DEFAULT_SHORT_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-short-thumbnail.png';
-    // ------------------------------------
-
     try {
-      //Cargar las relaciones necesarias para la notificación al final.
       const video = await this.videoRepository.findOne({
         where: { id: videoId },
         relations: ['channel', 'channel.user'],
@@ -103,7 +98,6 @@ export class VideosService {
         return;
       }
 
-      // 10% - Iniciado
       video.processingProgress = 10;
       await this.videoRepository.save(video);
 
@@ -112,75 +106,61 @@ export class VideosService {
         throw new Error('No video file found');
       }
 
-      // 30% - Analizando duración y clasificando tipo (short/video)
       let duration = 61;
       try {
         console.log(`Analizando duración del video ${videoId}...`);
-        // Este método existe y devuelve la duración en segundos
         duration = await this.getVideoDurationFromBuffer(videoFile.buffer, videoFile.mimetype);
         console.log(`Duración detectada: ${duration} segundos`);
       } catch (error) {
         console.error('FFPROBE error, using fallback duration', error);
-        console.log(` Usando duración por defecto: ${duration} segundos`);
       }
 
       video.duration = duration === 0 ? 61 : duration;
       video.type = video.duration <= 60 ? 'short' : 'video';
 
       console.log(`Clasificación del video ${videoId}: ${video.title}`);
-      console.log(`Duración final: ${video.duration} segundos`);
-      console.log(`Tipo asignado: ${video.type}`);
-      console.log(`Es Short: ${video.duration <= 60 ? 'SÍ ' : 'NO '}`);
-
       video.processingProgress = 30;
       await this.videoRepository.save(video);
 
-      // 70% - Subiendo Video a S3
+      // Subiendo Video a S3 compatible (Supabase)
       const videoExtension = videoFile.originalname.split('.').pop();
       const videoKey = `videos/${uuidv4()}_${Date.now()}.${videoExtension}`;
 
-      const videoCommand = new PutObjectCommand({
+      await this.s3Client.send(new PutObjectCommand({
         Bucket: process.env.SUPABASE_BUCKET_NAME!,
         Key: videoKey,
         Body: videoFile.buffer,
         ContentType: videoFile.mimetype,
-      });
+      }));
 
-      await this.s3Client.send(videoCommand);
       const supabaseUrl = process.env.SUPABASE_ENDPOINT?.replace('/storage/v1/s3', '');
       video.url = `${supabaseUrl}/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${videoKey}`;
 
       video.processingProgress = 70;
       await this.videoRepository.save(video);
 
-      // 90% - Subiendo Thumbnail (si existe) O ASIGNANDO DEFAULT
+      // Subiendo Thumbnail (si existe) O ASIGNANDO DEFAULT
       const thumbnailFile = files.find(file => file.mimetype.startsWith('image/'));
 
       if (thumbnailFile) {
-        // Caso 1: El usuario SUBIÓ una miniatura, la subimos a S3
         const thumbExtension = thumbnailFile.originalname.split('.').pop();
         const thumbKey = `thumbnails/${uuidv4()}_${Date.now()}.${thumbExtension}`;
 
-        const thumbCommand = new PutObjectCommand({
+        await this.s3Client.send(new PutObjectCommand({
           Bucket: process.env.SUPABASE_BUCKET_NAME!,
           Key: thumbKey,
           Body: thumbnailFile.buffer,
           ContentType: thumbnailFile.mimetype,
-        });
-
-        await this.s3Client.send(thumbCommand);
+        }));
         
-        const supabaseUrl = process.env.SUPABASE_ENDPOINT?.replace('/storage/v1/s3', '');
         video.thumbnail = `${supabaseUrl}/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${thumbKey}`;
-        console.log(` Miniatura personalizada subida.`);
-
+        console.log(`Miniatura personalizada subida.`);
       } else {
-        // Caso 2: El usuario NO SUBIÓ miniatura, asignamos la URL por defecto
         if (video.type === 'short') {
-          video.thumbnail = DEFAULT_SHORT_THUMBNAIL;
+          video.thumbnail = this.DEFAULT_SHORT_THUMBNAIL;
           console.log(`Asignando miniatura por defecto para SHORT.`);
         } else {
-          video.thumbnail = DEFAULT_VIDEO_THUMBNAIL;
+          video.thumbnail = this.DEFAULT_VIDEO_THUMBNAIL;
           console.log(`Asignando miniatura por defecto para VIDEO.`);
         }
       }
@@ -188,12 +168,13 @@ export class VideosService {
       video.processingProgress = 90;
       await this.videoRepository.save(video);
 
-      // 100% - Completado
+      // 100% - Completado definitivo
       video.status = 'completed';
       video.processingProgress = 100;
+      
+      // Intentamos guardado final seguro
       await this.videoRepository.save(video);
-
-      console.log(`LOG: Procesamiento completado para video ${videoId}`);
+      console.log(`LOG: Procesamiento completado y guardado para video ${videoId}`);
 
       try {
         await this.notifySubscribers(video);
@@ -214,9 +195,8 @@ export class VideosService {
   // NOTIFICACIÓN DE SUSCRIPTORES AL TERMINAR PROCESO
   // ======================================================
   private async notifySubscribers(video: Video): Promise<void> {
-    // Es crucial que 'video' tenga las relaciones channel y channel.user cargadas (ver punto 3)
     if (!video.channel || !video.channel.user) {
-      console.error(`ERROR: No se puede notificar a los suscriptores. Faltan datos de canal o usuario para el video ${video.id}`);
+      console.error(`ERROR: No se puede notificar a los suscriptores. Faltan datos de canal para el video ${video.id}`);
       return;
     }
 
@@ -225,11 +205,8 @@ export class VideosService {
     const videoTitle = video.title;
 
     try {
-      // 1. Encontrar todas las suscripciones al canal del creador
       const subscriptions = await this.subscriptionsRepository.find({
-        where: {
-          channel: { channel_id: video.channel.channel_id }
-        },
+        where: { channel: { channel_id: video.channel.channel_id } },
         relations: ['user'],
       });
 
@@ -238,21 +215,16 @@ export class VideosService {
         return;
       }
 
-      // 2. Crear y enviar notificaciones a todos los suscriptores
       const notificationPromises = subscriptions.map(sub => {
         const subscriberId = sub.user.user_id;
-
-        // Evitar auto-notificación (opcional)
-        if (subscriberId === videoOwnerId) {
-          return Promise.resolve();
-        }
+        if (subscriberId === videoOwnerId) return Promise.resolve();
 
         const linkTarget = video.type === 'short' ? `/shorts/${videoId}` : `/watch/${videoId}`;
         const notificationContent = `posted a new ${video.type}: ${videoTitle.substring(0, 30)}...`;
 
         return this.notificationsService.createNotification(
-          subscriberId, // Receptor: El suscriptor
-          videoOwnerId, // Emisor: El dueño del video
+          subscriberId,
+          videoOwnerId,
           NotificationType.NEW_VIDEO,
           notificationContent,
           linkTarget,
@@ -261,7 +233,6 @@ export class VideosService {
 
       await Promise.all(notificationPromises);
       console.log(`Video ${videoId}: ${notificationPromises.length} suscriptores notificados.`);
-
     } catch (error) {
       console.error(`ERROR: Falló el envío de notificaciones para el video ${videoId}`, error);
     }
@@ -274,9 +245,7 @@ export class VideosService {
     });
     if (!video) throw new NotFoundException('Video not found');
 
-    // Si está completado, devolvemos también el link para redirección
     const link = video.type === 'short' ? `/shorts/${video.id}` : `/watch/${video.id}`;
-
     return {
       status: video.status,
       progress: video.processingProgress,
@@ -289,10 +258,6 @@ export class VideosService {
   // UPDATE VIDEO
   // ======================================================
   async update(id: string, updateVideoDto: UpdateVideoDto, files?: Express.Multer.File[]) {
-    const DEFAULT_VIDEO_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-video-thumbnail.png';
-    const DEFAULT_SHORT_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-short-thumbnail.png';
-    // ---------------------------------------------------------------------------------
-
     const video = await this.videoRepository.findOne({
       where: { id },
       relations: ['channel', 'channel.user', 'tags'],
@@ -312,44 +277,37 @@ export class VideosService {
       const key = `thumbnails/${uuidv4()}_${Date.now()}.${extension}`;
 
       try {
-        // 1. Subir nueva thumbnail
-        const command = new PutObjectCommand({
+        await this.s3Client.send(new PutObjectCommand({
           Bucket: process.env.SUPABASE_BUCKET_NAME!,
           Key: key,
           Body: thumbnailFile.buffer,
           ContentType: thumbnailFile.mimetype,
-        });
+        }));
 
-        await this.s3Client.send(command);
-        const url = `https://${process.env.SUPABASE_BUCKET_NAME}.s3.${process.env.SUPABASE_REGION}.amazonaws.com/${key}`;
-        updates.thumbnail = url;
+        const supabaseUrl = process.env.SUPABASE_ENDPOINT?.replace('/storage/v1/s3', '');
+        updates.thumbnail = `${supabaseUrl}/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${key}`;
 
-        // 2. Eliminar thumbnail anterior SOLO SI NO ES DEFAULT
         if (video.thumbnail) {
           const isDefaultThumbnail =
-            video.thumbnail === DEFAULT_VIDEO_THUMBNAIL ||
-            video.thumbnail === DEFAULT_SHORT_THUMBNAIL;
+            video.thumbnail === this.DEFAULT_VIDEO_THUMBNAIL ||
+            video.thumbnail === this.DEFAULT_SHORT_THUMBNAIL;
 
-          if (isDefaultThumbnail) {
-            console.log(`Thumbnail anterior es por defecto, se omite el borrado de S3.`);
-          } else {
+          if (!isDefaultThumbnail) {
             try {
-              // Borrar thumbnail anterior
               const oldKey = video.thumbnail.split('/').pop();
               await this.s3Client.send(new DeleteObjectCommand({
                 Bucket: process.env.SUPABASE_BUCKET_NAME!,
                 Key: `thumbnails/${oldKey}`
               }));
-              console.log(`Thumbnail personalizado anterior eliminado de S3.`);
+              console.log(`Thumbnail personalizado anterior eliminado.`);
             } catch (deleteError) {
-              console.error('Error deleting old custom thumbnail from S3:', deleteError);
+              console.error('Error deleting old custom thumbnail:', deleteError);
             }
           }
         }
-
       } catch (err) {
         console.error('S3 upload error3:', err);
-        throw new InternalServerErrorException('Failed to upload thumbnail to S3');
+        throw new InternalServerErrorException('Failed to upload thumbnail to Supabase');
       }
     }
 
@@ -368,32 +326,27 @@ export class VideosService {
 
   private async getVideoDurationFromBuffer(buffer: Buffer, mimetype: string): Promise<number> {
     return new Promise((resolve, reject) => {
-      // 1. Crear un Readable Stream a partir del Buffer
       const stream = Readable.from(buffer);
-
-      // Determinar formato basado en mimetype
-      let format = 'mp4'; // default
+      let format = 'mp4';
       if (mimetype.includes('webm')) format = 'webm';
       else if (mimetype.includes('matroska') || mimetype.includes('mkv')) format = 'matroska';
       else if (mimetype.includes('quicktime') || mimetype.includes('mov')) format = 'mov';
       else if (mimetype.includes('avi')) format = 'avi';
 
-      // 2. Usar el stream como input
-      const command = ffmpeg(stream)
-        .inputFormat(format);
-
-      command.ffprobe((err, metadata) => {
-        if (err) {
-          console.error('FFprobe error:', err);
-          return reject(new InternalServerErrorException('ffprobe failed to analyze stream.'));
-        }
-        resolve(metadata.format.duration || 0);
-      });
+      ffmpeg(stream)
+        .inputFormat(format)
+        .ffprobe((err, metadata) => {
+          if (err) {
+            console.error('FFprobe error:', err);
+            return reject(new InternalServerErrorException('ffprobe failed to analyze stream.'));
+          }
+          resolve(metadata.format.duration || 0);
+        });
     });
   }
 
   // ======================================================
-  // TODOS LOS MÉTODOS ORIGINALES SE MANTIENEN
+  // OTROS MÉTODOS MANTENIDOS COPIADOS TAL CUAL
   // ======================================================
   async incrementViews(id: string): Promise<void> {
     const video = await this.videoRepository.findOne({ where: { id } });
@@ -409,7 +362,6 @@ export class VideosService {
         order: { createdAt: 'DESC' },
       });
     }
-
     const search = `%${q.toLowerCase()}%`;
     return this.videoRepository
       .createQueryBuilder('video')
@@ -431,7 +383,6 @@ export class VideosService {
         order: { createdAt: 'DESC' },
       });
     }
-
     const search = `%${q.toLowerCase()}%`;
     return this.videoRepository
       .createQueryBuilder('video')
@@ -456,7 +407,6 @@ export class VideosService {
         order: { createdAt: 'DESC' },
       });
     }
-
     const search = `%${q.toLowerCase()}%`;
     return this.videoRepository
       .createQueryBuilder('video')
@@ -493,35 +443,24 @@ export class VideosService {
   }
 
   async findAllByChannel(userId: string) {
-    // 1. Verificar Usuario y Canal
     const user = await this.userService.findOneById(userId);
-    if (!user) {
-      throw new NotFoundException(`User with ${userId} not found`);
-    }
+    if (!user) throw new NotFoundException(`User with ${userId} not found`);
 
     const channel = user.channel;
-    if (!channel) {
-      throw new NotFoundException(`Channel not found for user ${userId}`);
-    }
+    if (!channel) throw new NotFoundException(`Channel not found for user ${userId}`);
 
     const channelId = channel.channel_id;
 
     const countsResult = await this.videoRepository.createQueryBuilder("video")
-      // Joins para Likes y Comentarios
       .leftJoin("video.likes", "like")
       .leftJoin("video.comments", "comment")
-
-      // Seleccionar el ID del video y los conteos calculados
       .select("video.id", "video_id")
       .addSelect("COUNT(DISTINCT like.id)", "likeCount")
       .addSelect("COUNT(DISTINCT comment.id)", "commentCount")
-
-      // Filtrar y agrupar solo por el video
       .where("video.channel_id = :channelId", { channelId: channelId })
       .groupBy("video.id")
       .getRawMany();
 
-    // 3. Mapear los Conteos para Búsqueda Rápida
     const countsMap = countsResult.reduce((map, item) => {
       map[item.video_id] = {
         likes: parseInt(item.likeCount || '0', 10),
@@ -530,10 +469,9 @@ export class VideosService {
       return map;
     }, {});
 
-    // 4.Obtener Videos con Relaciones
     const videos = await this.videoRepository.find({
       where: { channel: { channel_id: channelId } },
-      relations: ['channel', 'tags'], // Carga tags y canal
+      relations: ['channel', 'tags'],
       order: { createdAt: 'DESC' },
     });
 
@@ -560,14 +498,8 @@ export class VideosService {
     if (!video) throw new NotFoundException('Video not found');
 
     if (!video.channel || !video.channel.user) {
-      console.error('Video found but missing channel or user information:', {
-        videoId: video.id,
-        hasChannel: !!video.channel,
-        hasUser: !!video.channel?.user,
-      });
       throw new ForbiddenException('Video no tiene información de canal o usuario asociada');
     }
-
     return video;
   }
 
@@ -588,55 +520,44 @@ export class VideosService {
       throw new ForbiddenException('You cannot delete this video');
     }
 
-    // --- URLs de Miniatura por Defecto ---
-    const DEFAULT_VIDEO_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-video-thumbnail.png';
-    const DEFAULT_SHORT_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-short-thumbnail.png';
-    // ---------------------------------------------------------------------------------------------
-
-    // Helper para extraer la Key exacta (tanto para videos/ como para thumbnails/) sin importar el dominio
     const getStorageKey = (url: string) => {
-      // Buscamos dónde empieza la carpeta dentro de la URL pública de Supabase
       if (url.includes('/videos/')) return `videos/${url.split('/videos/').pop()}`;
       if (url.includes('/thumbnails/')) return `thumbnails/${url.split('/thumbnails/').pop()}`;
       return url.split('/').pop() || '';
     };
 
-    // Eliminar video de Supabase Storage
     if (video.url) {
       try {
         const videoKey = getStorageKey(video.url);
         if (videoKey) {
           await this.s3Client.send(new DeleteObjectCommand({
             Bucket: process.env.SUPABASE_BUCKET_NAME!,
-            Key: videoKey // ◄ Ahora va la key completa directa: 'videos/uuid_fecha.mp4'
+            Key: videoKey
           }));
-          console.log(`Video ${id} eliminado de Supabase Storage. Key: ${videoKey}`);
+          console.log(`Video ${id} eliminado de Storage.`);
         }
       } catch (error) {
         console.error('Error deleting video from Supabase:', error);
       }
     }
 
-    // Eliminar thumbnail de Supabase Storage
     if (video.thumbnail) {
       const isDefaultThumbnail =
-        video.thumbnail === DEFAULT_VIDEO_THUMBNAIL ||
-        video.thumbnail === DEFAULT_SHORT_THUMBNAIL;
+        video.thumbnail === this.DEFAULT_VIDEO_THUMBNAIL ||
+        video.thumbnail === this.DEFAULT_SHORT_THUMBNAIL;
 
-      if (isDefaultThumbnail) {
-        console.log(`Thumbnail para video ${id} es por defecto, se omite el borrado de Storage.`);
-      } else {
+      if (!isDefaultThumbnail) {
         try {
           const thumbnailKey = getStorageKey(video.thumbnail);
           if (thumbnailKey) {
             await this.s3Client.send(new DeleteObjectCommand({
               Bucket: process.env.SUPABASE_BUCKET_NAME!,
-              Key: thumbnailKey // ◄ 'thumbnails/uuid_fecha.png'
+              Key: thumbnailKey
             }));
-            console.log(`Thumbnail personalizado para video ${id} eliminado de Supabase Storage. Key: ${thumbnailKey}`);
+            console.log(`Thumbnail eliminado de Storage.`);
           }
         } catch (error) {
-          console.error('Error deleting custom thumbnail from Supabase:', error);
+          console.error('Error deleting custom thumbnail:', error);
         }
       }
     }
