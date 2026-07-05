@@ -43,8 +43,11 @@ async function bootstrap() {
     }
   );
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port, '0.0.0.0'); 
+  const portEnv = process.env.PORT;
+  const port = portEnv ? parseInt(portEnv, 10) : 3000;
+  
+  // Escuchamos en el puerto asignado y forzamos el host 0.0.0.0
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 Aplicación corriendo en el puerto: ${port}`);
 }
 bootstrap();
