@@ -63,7 +63,7 @@ function Short(props) {
             </div>
             <div className='short-card-footer'>
                 <p className="subs-channel">{props.shortviews}</p>
-                <p className="subs-channel" style={{ color: '#90b484' }}>{getTimeAgo(props.createdAt)}</p>
+                <p className="subs-channel" style={{ color: '#FEB082' }}>{getTimeAgo(props.createdAt)}</p>
             </div>
         </div>
     );
