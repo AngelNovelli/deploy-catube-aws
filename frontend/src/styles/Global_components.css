@@ -1,28 +1,39 @@
 /* ========================================================================= */
-/* CONFIGURACIÓN DE VARIABLES (:root - MODO OSCURO)                          */
+/* MODO OSCURO BASE (:root)                   */
 /* ========================================================================= */
 :root {
-    /* Fondos y Superficies (Gris Profundo/Gamer) */
-    --primary-color: #0D0D0E;       /* Fondo ultra oscuro base */
-    --background-color: #0D0D0E;    /* Fondo de la página */
-    --card-bg: #161619;             /* Superficie de tarjetas y secciones */
-    --input-bg: #1C1C21;            /* Fondo de inputs */
-    --hover-color: #222227;          /* Fondo de hover en oscuro */
-    
+    /* Fondos y Superficies */
+    --primary-color: #0D0D0E;
+    /* Fondo principal (Header, Nav) */
+   --background-color: #0D0D0E;
+    /* Fondo de la página */
+    --hover-color: #222227;
+    /* Fondo de hover en oscuro */
+   --card-bg: #161619;
+    /* Fondo de tarjetas/secciones */
+    --input-bg: #1C1C21;
+    /* Fondo de inputs */
     --container-color: #161619;
-    --container-color-blur: rgba(22, 22, 25, 0.85); /* Vidrio esmerilado */
-    --container-color-gradient: linear-gradient(90deg, #161619, #222227, #161619);
+    /* Fondo de contenedores con blur/gradiente */
+    --container-color-blur: #1e1e1fd9;
+    /* Fondo de contenedores con opacidad/blur */
+    --container-color-gradient: linear-gradient(90deg, #1e1e1f, #252526, #1e1e1f);
 
     /* Texto y Bordes */
-    --text-color: #FAFAFA;          /* Blanco roto para títulos (Contraste Pro) */
-    --text-secondary: #8E8E93;      /* Gris apagado para datos menores */
-    --border-color: #26262B;        /* Bordes sutiles oscuros */
-    --border-container-color: #32323A;
+    --text-color: #777878;
+    /* Color de texto principal (gris claro) */
+    --border-color: #2d2d2e;
+    /* Color de bordes y separadores */
+    --border-container-color: #3a3a3a;
+    /* Borde más oscuro para contraste */
 
-    /* Botones y Acentos (Naranja y Rosa) */
-    --btn: #FEB082;                 /* Naranja Principal */
-    --btn-dark: #FEA16B;            /* Hover Naranja */
-    --accent-color: #F5C4E1;        /* Rosa Secundario */
+    /* Botones y Acento */
+    --btn: #90B484;
+    /* Color de botón (verde/oliva) */
+    --btn-dark: #749269;
+    /* Hover del botón */
+    --accent-color: #F5C4E1;
+    /* Color de acento */
 
     /* Scrollbar */
     --scrollbar-thumb: #FEB082;
@@ -32,59 +43,156 @@
     /* Generales */
     --border-radius: 30px;
     --font-size: clamp(0.5rem, 3vw, 1rem);
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================================================= */
-/* CONFIGURACIÓN DE VARIABLES (MODO CLARO)                                   */
+/* MODO CLARO (body.light-mode)                   */
 /* ========================================================================= */
 body.light-mode {
     /* Fondos y Superficies */
     --primary-color: #FFFFFF;
-    --background-color: #F8F9FA;
+    /* Blanco puro para el fondo principal (Header, Nav) */
+    --background-color: #F8F8F8;
+    /* Gris muy claro para el fondo de la página */
+    --hover-color: #E6E6E6;
+    /* Gris muy claro para el hover */
     --card-bg: #FFFFFF;
-    --input-bg: #F1F3F5;
-    --hover-color: #E9ECEF;
-    
+    /* Blanco puro para tarjetas/secciones */
+    --input-bg: #FFFFFF;
+    /* Fondo de inputs en blanco */
     --container-color: #FFFFFF;
-    --container-color-blur: rgba(255, 255, 255, 0.9);
-    --container-color-gradient: linear-gradient(90deg, #F1F3F5, #FFFFFF, #F1F3F5);
+    /* Fondo de contenedores en blanco */
+    --container-color-blur: #FFFFFfd9;
+    /* Fondo de blur semi-transparente blanco */
+    --container-color-gradient: linear-gradient(90deg, #F0F0F0, #FFFFFF, #F0F0F0);
+    /* Gradiente de grises claros */
 
     /* Texto y Bordes */
-    --text-color: #1A1A1E;          /* Texto oscuro */
-    --text-secondary: #6C757D;
-    --border-color: #E2E8F0;
-    --border-container-color: #CBD5E1;
+    --text-color: #1A1A1A;
+    /* Negro muy oscuro para alto contraste */
+    --border-color: #D0D0D0;
+    /* Gris claro para separadores y bordes */
+    --border-container-color: #AAAAAA;
+    /* Gris medio para bordes de contenedores */
 
-    /* Se mantienen la identidad estética (Naranja y Rosa) */
+    /* Botones y Acento (Se mantienen los colores de marca) */
     --btn: #FEB082;
     --btn-dark: #FEA16B;
     --accent-color: #F5C4E1;
 
     /* Scrollbar */
-    --scrollbar-thumb: #CBD5E1;
-    --scrollbar-thumb-hover: #94A3B8;
+    --scrollbar-thumb: #C0C0C0;
+    --scrollbar-thumb-hover: #999999;
     --scrollbar-track: transparent;
 
     /* Generales */
-    --shadow-color: rgba(0, 0, 0, 0.08);
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 /* ========================================================================= */
-/* APLICACIÓN DE ESTILOS DE TEMA                                             */
+/* MODO OSCURO BASE (:root)                   */
 /* ========================================================================= */
+:root {
+    /* Fondos y Superficies */
+    --primary-color: #0D0D0E;
+    /* Fondo principal (Header, Nav) */
+    --background-color: #0D0D0E;
+    /* Fondo de la página */
+    --hover-color: #222227;
+    /* Fondo de hover en oscuro */
+    --card-bg: #161619;
+    /* Fondo de tarjetas/secciones */
+    --input-bg: #1C1C21;
+    /* Fondo de inputs */
+    --container-color: #161619;
+    /* Fondo de contenedores con blur/gradiente */
+    --container-color-blur: #1e1e1fd9;
+    /* Fondo de contenedores con opacidad/blur */
+    --container-color-gradient: linear-gradient(90deg, #1e1e1f, #252526, #1e1e1f);
 
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    padding-top: 56px;
+    /* Texto y Bordes */
+    --text-color: #777878;
+    /* Color de texto principal (gris claro) */
+    --border-color: #2d2d2e;
+    /* Color de bordes y separadores */
+    --border-container-color: #3a3a3a;
+    /* Borde más oscuro para contraste */
+
+    /* Botones y Acento */
+    --btn: #FEB082;
+    /* Color de botón (verde/oliva) */
+    --btn-dark: #FEA16B;
+    /* Hover del botón */
+    --accent-color: #F5C4E1;
+    /* Color de acento */
+
+    /* Scrollbar */
+    --scrollbar-thumb: #FEB082;
+    --scrollbar-thumb-hover: #FEA16B;
+    --scrollbar-track: transparent;
+
+    /* Generales */
+    --border-radius: 30px;
+    --font-size: clamp(0.5rem, 3vw, 1rem);
+    --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
+/* ========================================================================= */
+/* MODO CLARO (body.light-mode)                   */
+/* ========================================================================= */
+body.light-mode {
+    /* Fondos y Superficies */
+    --primary-color: #FFFFFF;
+    /* Blanco puro para el fondo principal (Header, Nav) */
+    --background-color: #F8F8F8;
+    /* Gris muy claro para el fondo de la página */
+    --hover-color: #E6E6E6;
+    /* Gris muy claro para el hover */
+    --card-bg: #FFFFFF;
+    /* Blanco puro para tarjetas/secciones */
+    --input-bg: #FFFFFF;
+    /* Fondo de inputs en blanco */
+    --container-color: #FFFFFF;
+    /* Fondo de contenedores en blanco */
+    --container-color-blur: #FFFFFfd9;
+    /* Fondo de blur semi-transparente blanco */
+    --container-color-gradient: linear-gradient(90deg, #F0F0F0, #FFFFFF, #F0F0F0);
+    /* Gradiente de grises claros */
+
+    /* Texto y Bordes */
+    --text-color: #1A1A1A;
+    /* Negro muy oscuro para alto contraste */
+    --border-color: #D0D0D0;
+    /* Gris claro para separadores y bordes */
+    --border-container-color: #AAAAAA;
+    /* Gris medio para bordes de contenedores */
+
+    /* Botones y Acento (Se mantienen los colores de marca) */
+    --btn: #FEB082;
+    --btn-dark: #FEA16B;
+    --accent-color: #F5C4E1;
+
+    /* Scrollbar */
+    --scrollbar-thumb: #C0C0C0;
+    --scrollbar-thumb-hover: #999999;
+    --scrollbar-track: transparent;
+
+    /* Generales */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================================================= */
+/* APLICACIÓN DE ESTILOS DE TEMA                 */
+/* ========================================================================= */
+
+/* ===== ESTILOS BASE Y GENERALES ===== */
 body.light-mode {
     background-color: var(--background-color) !important;
     color: var(--text-color) !important;
 }
 
+body.light-mode,
 body.light-mode * {
     border-color: var(--border-color) !important;
 }
@@ -96,9 +204,16 @@ body.light-mode [class*="separator"] {
     background-color: var(--border-color) !important;
 }
 
-/* ===== ESTRUCTURA PRINCIPAL Y CONTENEDORES ===== */
-main, section, article {
-    background-color: var(--card-bg);
+/* ===== ESTRUCTURA PRINCIPAL (FONDOS) ===== */
+body.light-mode header,
+body.light-mode nav,
+body.light-mode .header,
+body.light-mode .navbar,
+body.light-mode [class*="nav"],
+body.light-mode main,
+body.light-mode section,
+body.light-mode article {
+    border-color: var(--border-color) !important;
 }
 
 body.light-mode main,
@@ -107,110 +222,152 @@ body.light-mode article {
     background-color: var(--card-bg) !important;
 }
 
-/* Sidebars con Blur */
-.sidebar,
-.ts-sidebar {
-    width: 270px;
-    position: fixed;
-    background-color: var(--container-color-blur);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-container-color);
-}
-
+/* Sidebar/Right Menu (Contenedores con blur) */
 body.light-mode .sidebar,
 body.light-mode .ts-sidebar {
     background-color: var(--container-color-blur) !important;
     border: 1px solid var(--border-container-color) !important;
 }
 
-/* ===== BOTONES E INTERACCIONES ===== */
-.ts-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--text-color);
-    padding: 12px 16px;
-    border-radius: var(--border-radius);
-    width: 100%;
-    background-color: transparent;
-    border: none;
+/* ===== COMPONENTES ESPECÍFICOS ===== */
+
+/* Menú de Amigos (Fondo claro) */
+body.light-mode [class="friends-menu "] {
+    background-color: var(--primary-color) !important;
+    /* Usamos la variable principal blanca */
 }
 
-.ts-nav-link:hover {
-    background: var(--btn) !important;
-    color: var(--primary-color) !important; /* Texto oscuro sobre el botón naranja */
+body.light-mode [class="friend-menu-header"] {
+    background-color: transparent !important;
 }
 
-.user-btn.logged-in,
-.menu-btn:hover,
-.mic-btn:hover,
-.notify-btn:hover,
-.user-btn:hover,
-.logged-in-icon,
-.change-password-form a:hover {
-    color: var(--btn) !important;
+/* Header actions (Fondo claro para el botón de acciones) */
+body.light-mode .sr-header-right>div.sr-header-userActions {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
-.sr-header-createButton {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    padding: 10px 20px;
-    color: var(--btn); /* Texto naranja */
-    font-size: 1rem;
-    gap: 8px;
-    cursor: pointer;
-    border: 1px solid var(--border-color);
+
+/* Login y Sign Up (Formulario principal con fondo claro) */
+body.light-mode #root>aside>div>form {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
-.sr-header-createButton:hover {
-    color: var(--btn-dark);
-    border-color: var(--btn);
+/* Botones con fondo de marca */
+
+
+body.light-mode .btn:hover,
+body.light-mode #root>aside>header>button:hover,
+body.light-mode [class*="btn"]:hover,
+body.light-mode [class="custom-file-label"]:hover {
 }
 
-/* Peligro y deshabilitar */
+/* Botones de acción transparentes (iconos de header) */
+body.light-mode #root>div.create-video-modal>div>header>button,
+body.light-mode #root>div.right-menu-modal>div>div>section>div,
+body.light-mode #root>div>div>header>button,
+body.light-mode [class*="action-button chat-button"],
+body.light-mode [class*="action-button profile-button"] {
+    background-color: transparent !important;
+}
+
+/* Botones de peligro (Rojo) */
 body.light-mode [class="discard-changes-create-video"],
-body.light-mode #root>aside>div>form button.delete-account-btn {
+body.light-mode #root>div.right-menu-modal>div>div>section>div>button.delete-account-btn.soon {
     background-color: #e96765 !important;
-    color: #FFFFFF !important;
+    color: var(--primary-color) !important;
+    /* Texto blanco sobre rojo */
+}
+
+body.light-mode [class="discard-changes-create-video"]:hover {
+    background-color: #b94c4a !important;
+}
+
+/* Botón de deshabilitar (Gris) */
+body.light-mode #root>div.right-menu-modal>div>div>section>div>button.disable-account-btn.soon {
+    background-color: #696969 !important;
+    color: var(--primary-color) !important;
+    /* Texto blanco sobre gris */
 }
 
 /* ===== FORMULARIOS e INPUTS ===== */
-input, textarea, select, [class*="input"], [class*="form-control"] {
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-}
-
 body.light-mode input,
 body.light-mode textarea,
-body.light-mode select {
+body.light-mode select,
+body.light-mode [class*="input"],
+body.light-mode [class*="form-control"] {
     background-color: var(--input-bg) !important;
     color: var(--text-color) !important;
     border-color: var(--border-color) !important;
 }
 
-input:focus, textarea:focus, select:focus {
-    border-color: var(--btn) !important;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(254, 176, 130, 0.2) !important; /* Glow Naranja */
+body.light-mode input:focus,
+body.light-mode textarea:focus,
+body.light-mode select:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px rgba(144, 180, 132, 0.2) !important;
 }
 
-/* ===== TIPOGRAFÍA E ICONOS ===== */
-h1, h2, h3, h4, h5, h6, p, span, label, a {
-    font-family: garet, sans-serif;
+/* ===== TIPOGRAFÍA y SVG (Iconos) ===== */
+/* Aplicamos text-color oscuro, excluyendo botones para evitar conflictos */
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode h5,
+body.light-mode h6,
+body.light-mode p,
+body.light-mode span,
+body.light-mode div:not([class*="btn"]):not([class*="button"]):not([class*="toggle"]),
+body.light-mode label,
+body.light-mode #publish-changes-btn,
+body.light-mode a:not([class*="btn"]),
+body.light-mode svg:not([class*="btn"]):not([class*="button"]),
+body.light-mode [class*="icon"]:not([class*="btn"]) {
+    color: var(--text-color) !important;
 }
 
-.title {
-    font-size: 1.125rem;
-    color: var(--text-secondary);
+/* Elementos de texto que deben ser blancos sobre un fondo de acento (como headers de tabla) */
+body.light-mode #root>main>div.container-short-principal>div>div.title-bar-short>p,
+body.light-mode #short-actions-container>div.channel-info>p,
+body.light-mode #root>main>div.container-studio>div.content>div.scroll-table-container>table>thead>tr * {
+    color: var(--primary-color) !important;
 }
 
-/* Cambiar texto secundario para vistas/tiempo en grises apagados */
-.video-metrics, .short-metrics, .subtitle {
-    color: var(--text-secondary) !important;
+/* Iconos del Header (Path y Span) */
+body.light-mode #root>header>div.sr-header-right>div>div.user-menu-container>button>svg>path,
+body.light-mode #root>header>div.sr-header-right>div>div.notification-menu>button>svg>path,
+body.light-mode #root>header>div.sr-header-right>button>span,
+body.light-mode #root>header>div.sr-header-searchBar>button>svg>path,
+body.light-mode #root>header>div.sr-header-right>button>span {
+    color: var(--text-color) !important;
+    fill: currentColor !important;
 }
 
-/* ===== SCROLLBAR INTERNACIONAL ===== */
+/* Títulos del menú lateral (user-menu-username) */
+body.light-mode .user-menu-username p {
+    color: var(--text-color) !important;
+}
+
+/* Hover de Iconos */
+body.light-mode #root>header>div.sr-header-right>div>div.user-menu-container>button:hover>svg>path,
+body.light-mode #root>header>div.sr-header-right>div>div.notification-menu>button:hover>svg>path,
+body.light-mode #root>header>div.sr-header-right>button>span:hover,
+body.light-mode #root>header>div.sr-header-searchBar>button>svg>path:hover {
+    color: var(--hover-color) !important;
+}
+
+/* Nav Link Hover (Texto de color en hover de botón/enlace) */
+body.light-mode .ts-nav-link:hover {
+    background: var(--btn) !important;
+    color: var(--primary-color) !important;
+    /* Texto blanco sobre el fondo del botón */
+}
+
+/* ===== TRANSICIONES Y SCROLLBAR ===== */
+
+/* Scrollbar (se mantiene igual, usando las variables de tema) */
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
@@ -235,58 +392,352 @@ h1, h2, h3, h4, h5, h6, p, span, label, a {
     background-color: var(--scrollbar-thumb-hover);
 }
 
-/* ===== GENERALES Y ANIMACIONES ===== */
+
+.loading,
+.error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+}
+
+.error {
+    color: #e96765;
+}
+
+
 @font-face {
     font-family: garet;
     src: url('../assets/fonts/garet/Garet-Book.woff2');
     font-weight: 400;
-    font-style: normal;
+    font-style: normal
 }
 
 * {
     margin: 0;
     padding: 0;
+    font-family: garet;
     box-sizing: border-box;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: .3s
 }
 
 .main-content {
     margin-left: 100px;
 }
 
+a,
+body {
+    color: var(--text-color)
+}
+
+
+.ts-nav-link,
+a {
+    text-decoration: none
+}
+
+.title {
+    font-weight: 500
+}
+
+.ts-nav-label {
+    font-size: var(--font-size);
+}
+
+#soon-modal {
+    display: none
+}
+
+.hide {
+    display: none !important;
+}
+
+body {
+    background-color: var(--background-color);
+    padding-top: 56px;
+}
+
+p {
+    font-size: var(--font-size)
+}
+
+h1 {
+    font-size: 2rem
+}
+
+hr {
+    background: var(--text-color);
+    height: 1px;
+    border: none;
+    border-radius: 30px;
+}
+
+.frequently-asked-questions summary,
+button:hover {
+    cursor: pointer
+}
+
+
+.user-btn.logged-in {
+    color: var(--btn);
+}
+
+.menu-btn:hover,
+.mic-btn:hover,
+.notify-btn:hover,
+.user-btn:hover {
+    color: var(--btn)
+}
+
+.logo {
+    height: 32px
+}
+
+.title {
+    font-size: 1.125rem;
+    color: #777878
+}
+
+.search-btn {
+    padding: 8px 12px;
+    border: none;
+    color: #1f1f20;
+    cursor: pointer
+}
+
+.search-btn:hover {
+    background-color: #749269
+}
+
+.sr-header-createButton {
+    background-color: var(--primary-color);
+    border-radius: 30px;
+    padding: 10px;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    gap: 8px;
+    cursor: pointer;
+    border: none
+}
+
+.sr-header-createButton i {
+    color: var(--primary-color);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    justify-content: center
+}
+
+.sr-header-createButton:hover {
+    color: var(--btn-dark)
+}
+
+.change-password-form a {
+    cursor: pointer;
+    text-align: end;
+}
+
+.change-password-form a:hover {
+    color: var(--btn);
+}
+
+.sr-header-userActions {
+    background-color: var(--primary-color);
+    border-radius: 20px;
+    padding: 5px 10px
+}
+
+.sidebar,
+.ts-sidebar {
+    width: 270px;
+    position: fixed;
+    background-color: #1e1e1fd9;
+    backdrop-filter: blur(10px);
+    border: 1px solid #3a3a3a;
+}
+
+
+
+.user-button {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.user-button:hover {
+    color: var(--btn);
+}
+
+.logged-in-icon {
+    color: var(--btn);
+}
+
+.logged-in-icon:hover {
+    color: var(--btn-dark);
+}
+
+.ts-sidebar {
+    top: 70px;
+    right: 16px;
+    border-radius: 30px;
+    z-index: 4;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column
+}
+
+/* RIGHT MENU */
+.ts-sidebar.collapsed {
+    transform: translateX(110%);
+    pointer-events: none;
+    background-color: var(--primary-color);
+    backdrop-filter: blur(10px);
+    border: 1px solid #3a3a3a;
+}
+
+.ts-sidebar-nav {
+    padding: 20px;
+}
+
+.user-menu-username {
+    text-align: center;
+    border-radius: 30px;
+}
+
+.user-menu-username p {
+    color: var(--text-color);
+}
+
+
+.user-menu-username span {
+    color: var(--btn);
+}
+
+.ts-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px
+}
+
+.ts-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-color);
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+    width: 100%;
+    background-color: transparent;
+    border: none
+}
+
+.ts-nav-link:hover {
+    background: var(--btn);
+    color: var(--primary-color)
+}
+
+.close-soon-modal-container {
+    width: 100%;
+    padding: 20px;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    background-color: #90b484;
+    margin-bottom: -32px
+}
+
+#close-soon-modal {
+    width: 100px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 30px;
+    background-color: transparent;
+    cursor: pointer;
+    border: 1px solid var(--primary-color)
+}
+
+#close-soon-modal:hover {
+    background: var(--primary-color);
+    color: var(--btn)
+}
+
+.play-modal-btn,
+.return-btn-soon {
+    width: 100px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    background-color: var(--btn)
+}
+
+.return-btn-soon {
+    margin: 0
+}
+
+.change-password-form button:hover,
+.play-modal-btn:hover,
+.return-btn-soon:hover {
+    background-color: var(--btn-dark)
+}
+
+.search-friend-btn:hover {
+    background-color: var(--btn-dark);
+}
+
 .title-container {
     width: 95%;
     margin: 1rem auto;
     background: var(--container-color-gradient);
+    ;
     border-radius: var(--border-radius);
     text-align: center;
-    padding: 20px;
 }
 
-@media (max-width: 768px) {
+@media (max-width:768px) {
+
+    .subtitle,
+    .podium-title,
+    .title-container h1 {
+        text-align: center;
+    }
+
     .main-content {
         margin-left: 0px;
     }
+
+    .setting-section {
+        padding: 20px;
+        width: 100%
+    }
+
+    .change-password-form button,
+    .delete-account-btn,
+    .disable-account-btn,
+    .settings-option-btn {
+        padding: 6px 10px
+    }
+
 }
 
-/* ===== PARCHE DE REPARACIÓN (MENÚ LATERAL DERECHO) ===== */
-.ts-nav-list {
-    list-style: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 5px !important;
-    padding: 0 !important;
-    margin: 0 !important;
+@keyframes skeleton-loading {
+    0% {
+        background-color: #e0e0e0;
+    }
+
+    50% {
+        background-color: #f0f0f0;
+    }
+
+    100% {
+        background-color: #e0e0e0;
+    }
 }
 
-/* Asegura que los íconos del menú derecho se alineen bien */
-.ts-nav-link {
-    justify-content: flex-start !important;
-    width: 100% !important;
-}
-
-/* Darle un toque más vivo a los títulos de las secciones */
-.title, h3 {
-    color: var(--text-color) !important;
-    opacity: 0.9;
+.skeleton {
+    animation: skeleton-loading 1.5s infinite ease-in-out;
 }
