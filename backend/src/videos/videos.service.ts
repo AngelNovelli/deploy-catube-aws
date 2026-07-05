@@ -33,14 +33,21 @@ export class VideosService {
     private notificationsService: NotificationsService,
 
   ) {
+    console.log("Control de credenciales Supabase:", {
+      hasAccessKey: !!process.env.SUPABASE_ACCESS_KEY_ID,
+      hasSecretKey: !!process.env.SUPABASE_SECRET_ACCESS_KEY,
+      endpoint: process.env.SUPABASE_ENDPOINT,
+      bucket: process.env.SUPABASE_BUCKET_NAME
+    });
+
     this.s3Client = new S3Client({
-      region: process.env.AWS_REGION || 'us-east-1',
-      endpoint: process.env.AWS_ENDPOINT, // Ej: https://id.supabase.co/storage/v1/s3
+      region: process.env.SUPABASE_REGION || 'us-east-1',
+      endpoint: process.env.SUPABASE_ENDPOINT, // Tu URL de la API S3 de Supabase
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        accessKeyId: process.env.SUPABASE_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.SUPABASE_SECRET_ACCESS_KEY || '',
       },
-      forcePathStyle: true, // Obligatorio para que Supabase entienda la ruta
+      forcePathStyle: true,
     });
 
   }
@@ -133,15 +140,15 @@ export class VideosService {
       const videoKey = `videos/${uuidv4()}_${Date.now()}.${videoExtension}`;
 
       const videoCommand = new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME!,
+        Bucket: process.env.SUPABASE_BUCKET_NAME!,
         Key: videoKey,
         Body: videoFile.buffer,
         ContentType: videoFile.mimetype,
       });
 
       await this.s3Client.send(videoCommand);
-      const supabaseUrl = process.env.AWS_ENDPOINT?.replace('/storage/v1/s3', '');
-      video.url = `${supabaseUrl}/storage/v1/object/public/${process.env.AWS_BUCKET_NAME}/${videoKey}`;
+      const supabaseUrl = process.env.SUPABASE_ENDPOINT?.replace('/storage/v1/s3', '');
+      video.url = `${supabaseUrl}/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${videoKey}`;
 
       video.processingProgress = 70;
       await this.videoRepository.save(video);
@@ -155,15 +162,16 @@ export class VideosService {
         const thumbKey = `thumbnails/${uuidv4()}_${Date.now()}.${thumbExtension}`;
 
         const thumbCommand = new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME!,
+          Bucket: process.env.SUPABASE_BUCKET_NAME!,
           Key: thumbKey,
           Body: thumbnailFile.buffer,
           ContentType: thumbnailFile.mimetype,
         });
 
         await this.s3Client.send(thumbCommand);
-        const supabaseUrl = process.env.AWS_ENDPOINT?.replace('/storage/v1/s3', '');
-        video.thumbnail = `${supabaseUrl}/storage/v1/object/public/${process.env.AWS_BUCKET_NAME}/${thumbKey}`;
+        
+        const supabaseUrl = process.env.SUPABASE_ENDPOINT?.replace('/storage/v1/s3', '');
+        video.thumbnail = `${supabaseUrl}/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${thumbKey}`;
         console.log(` Miniatura personalizada subida.`);
 
       } else {
@@ -306,14 +314,14 @@ export class VideosService {
       try {
         // 1. Subir nueva thumbnail
         const command = new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME!,
+          Bucket: process.env.SUPABASE_BUCKET_NAME!,
           Key: key,
           Body: thumbnailFile.buffer,
           ContentType: thumbnailFile.mimetype,
         });
 
         await this.s3Client.send(command);
-        const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        const url = `https://${process.env.SUPABASE_BUCKET_NAME}.s3.${process.env.SUPABASE_REGION}.amazonaws.com/${key}`;
         updates.thumbnail = url;
 
         // 2. Eliminar thumbnail anterior SOLO SI NO ES DEFAULT
@@ -329,7 +337,7 @@ export class VideosService {
               // Borrar thumbnail anterior
               const oldKey = video.thumbnail.split('/').pop();
               await this.s3Client.send(new DeleteObjectCommand({
-                Bucket: process.env.AWS_BUCKET_NAME!,
+                Bucket: process.env.SUPABASE_BUCKET_NAME!,
                 Key: `thumbnails/${oldKey}`
               }));
               console.log(`Thumbnail personalizado anterior eliminado de S3.`);
@@ -599,7 +607,7 @@ export class VideosService {
         const videoKey = getStorageKey(video.url);
         if (videoKey) {
           await this.s3Client.send(new DeleteObjectCommand({
-            Bucket: process.env.AWS_BUCKET_NAME!,
+            Bucket: process.env.SUPABASE_BUCKET_NAME!,
             Key: videoKey // ◄ Ahora va la key completa directa: 'videos/uuid_fecha.mp4'
           }));
           console.log(`Video ${id} eliminado de Supabase Storage. Key: ${videoKey}`);
@@ -622,7 +630,7 @@ export class VideosService {
           const thumbnailKey = getStorageKey(video.thumbnail);
           if (thumbnailKey) {
             await this.s3Client.send(new DeleteObjectCommand({
-              Bucket: process.env.AWS_BUCKET_NAME!,
+              Bucket: process.env.SUPABASE_BUCKET_NAME!,
               Key: thumbnailKey // ◄ 'thumbnails/uuid_fecha.png'
             }));
             console.log(`Thumbnail personalizado para video ${id} eliminado de Supabase Storage. Key: ${thumbnailKey}`);
