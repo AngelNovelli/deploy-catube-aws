@@ -17,102 +17,10 @@
     /* Fondo de contenedores con blur/gradiente */
     --container-color-blur: #1e1e1fd9;
     /* Fondo de contenedores con opacidad/blur */
-    --container-color-gradient: linear-gradient(90deg, #1e1e1f, #252526, #1e1e1f);
+    --container-color-gradient: linear-gradient(90deg, #161619, #161619, #161619);
 
     /* Texto y Bordes */
-    --text-color: #777878;
-    /* Color de texto principal (gris claro) */
-    --border-color: #2d2d2e;
-    /* Color de bordes y separadores */
-    --border-container-color: #3a3a3a;
-    /* Borde más oscuro para contraste */
-
-    /* Botones y Acento */
-    --btn: #90B484;
-    /* Color de botón (verde/oliva) */
-    --btn-dark: #749269;
-    /* Hover del botón */
-    --accent-color: #F5C4E1;
-    /* Color de acento */
-
-    /* Scrollbar */
-    --scrollbar-thumb: #FEB082;
-    --scrollbar-thumb-hover: #FEA16B;
-    --scrollbar-track: transparent;
-
-    /* Generales */
-    --border-radius: 30px;
-    --font-size: clamp(0.5rem, 3vw, 1rem);
-    --shadow-color: rgba(0, 0, 0, 0.3);
-}
-
-/* ========================================================================= */
-/* MODO CLARO (body.light-mode)                   */
-/* ========================================================================= */
-body.light-mode {
-    /* Fondos y Superficies */
-    --primary-color: #FFFFFF;
-    /* Blanco puro para el fondo principal (Header, Nav) */
-    --background-color: #F8F8F8;
-    /* Gris muy claro para el fondo de la página */
-    --hover-color: #E6E6E6;
-    /* Gris muy claro para el hover */
-    --card-bg: #FFFFFF;
-    /* Blanco puro para tarjetas/secciones */
-    --input-bg: #FFFFFF;
-    /* Fondo de inputs en blanco */
-    --container-color: #FFFFFF;
-    /* Fondo de contenedores en blanco */
-    --container-color-blur: #FFFFFfd9;
-    /* Fondo de blur semi-transparente blanco */
-    --container-color-gradient: linear-gradient(90deg, #F0F0F0, #FFFFFF, #F0F0F0);
-    /* Gradiente de grises claros */
-
-    /* Texto y Bordes */
-    --text-color: #1A1A1A;
-    /* Negro muy oscuro para alto contraste */
-    --border-color: #D0D0D0;
-    /* Gris claro para separadores y bordes */
-    --border-container-color: #AAAAAA;
-    /* Gris medio para bordes de contenedores */
-
-    /* Botones y Acento (Se mantienen los colores de marca) */
-    --btn: #FEB082;
-    --btn-dark: #FEA16B;
-    --accent-color: #F5C4E1;
-
-    /* Scrollbar */
-    --scrollbar-thumb: #C0C0C0;
-    --scrollbar-thumb-hover: #999999;
-    --scrollbar-track: transparent;
-
-    /* Generales */
-    --shadow-color: rgba(0, 0, 0, 0.1);
-}
-
-/* ========================================================================= */
-/* MODO OSCURO BASE (:root)                   */
-/* ========================================================================= */
-:root {
-    /* Fondos y Superficies */
-    --primary-color: #0D0D0E;
-    /* Fondo principal (Header, Nav) */
-    --background-color: #0D0D0E;
-    /* Fondo de la página */
-    --hover-color: #222227;
-    /* Fondo de hover en oscuro */
-    --card-bg: #161619;
-    /* Fondo de tarjetas/secciones */
-    --input-bg: #1C1C21;
-    /* Fondo de inputs */
-    --container-color: #161619;
-    /* Fondo de contenedores con blur/gradiente */
-    --container-color-blur: #1e1e1fd9;
-    /* Fondo de contenedores con opacidad/blur */
-    --container-color-gradient: linear-gradient(90deg, #1e1e1f, #252526, #1e1e1f);
-
-    /* Texto y Bordes */
-    --text-color: #777878;
+    --text-color: #FAFAFA;
     /* Color de texto principal (gris claro) */
     --border-color: #2d2d2e;
     /* Color de bordes y separadores */
@@ -161,7 +69,7 @@ body.light-mode {
     /* Gradiente de grises claros */
 
     /* Texto y Bordes */
-    --text-color: #1A1A1A;
+    --text-color: #FAFAFA;
     /* Negro muy oscuro para alto contraste */
     --border-color: #D0D0D0;
     /* Gris claro para separadores y bordes */
