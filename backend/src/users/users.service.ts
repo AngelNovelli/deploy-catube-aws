@@ -86,7 +86,10 @@ export class UsersService {
 
         // Calcular la clave: Primera letra del nombre de usuario capitalizada + '.png'
         const firstLetter = capitalizedUsername.charAt(0).toUpperCase();
-        const key = `profile/${firstLetter}.png`;
+        const normalizedFirstLetter = firstLetter === 'Ñ' ? 'NN' : firstLetter;
+        const key = `profile/${normalizedFirstLetter}.png`;
+
+
 
         // Construir la URL completa
         const defaultAvatarUrl = `https://${bucketName}.s3.${awsRegion}.amazonaws.com/${key}`;

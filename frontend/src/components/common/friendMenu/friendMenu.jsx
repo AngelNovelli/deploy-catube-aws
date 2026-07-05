@@ -618,7 +618,7 @@ export function FriendMenu() {
                 aria-controls="friend-list-content"
                 className='openFriendMenu'
             >
-                <FaUserFriends size={30} color="#90b484" />
+                <FaUserFriends size={30} color="#f08c52" />
             </button>
 
             {isFriendMenuOpen && (
@@ -641,7 +641,7 @@ export function FriendMenu() {
                             )}
 
                             <button onClick={toggleFriendMenu}>
-                                <IoIosCloseCircle size={30} color="#90b484" />
+                                <IoIosCloseCircle size={30} color="#f08c52" />
                             </button>
                         </div>
 

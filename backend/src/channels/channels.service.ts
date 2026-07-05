@@ -59,7 +59,10 @@ export class ChannelsService {
 
         // Asignar avatar por defecto basado en la primera letra en Supabase
         const firstLetter = newChannel.channel_name.charAt(0).toUpperCase();
-        newChannel.photoUrl = this.getPublicUrl(`${this.STORAGE_FOLDER_PROFILE}/${firstLetter}.png`);
+        const normalizedFirstLetter = firstLetter === 'Ñ' ? 'NN' : firstLetter;
+        newChannel.photoUrl = this.getPublicUrl(`${this.STORAGE_FOLDER_PROFILE}/${normalizedFirstLetter}.png`);
+
+
 
         return this.channelRepository.save(newChannel);
     }
@@ -258,9 +261,12 @@ export class ChannelsService {
         }
 
         const firstLetter = channel.channel_name.charAt(0).toUpperCase();
-        channel.photoUrl = this.getPublicUrl(`${this.STORAGE_FOLDER_PROFILE}/${firstLetter}.png`);
+        const normalizedFirstLetter = firstLetter === 'Ñ' ? 'NN' : firstLetter;
+        channel.photoUrl = this.getPublicUrl(`${this.STORAGE_FOLDER_PROFILE}/${normalizedFirstLetter}.png`);
+
         
         return this.channelRepository.save(channel);
+
     }
 
     async setDefaultBanner(id: string): Promise<Channel> {

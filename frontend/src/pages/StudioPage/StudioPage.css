@@ -753,13 +753,13 @@
 .delete-account {
     padding: 12px;
     width: 150px;
-    background-color: #ff7676;
+    background-color: #f394cd;
     color: var(--hover-color);
     border-radius: 30px;
 }
 
 .delete-account:hover {
-    background-color: #ff4040;
+    background-color: #f776c3;
     cursor: pointer;
 }
 

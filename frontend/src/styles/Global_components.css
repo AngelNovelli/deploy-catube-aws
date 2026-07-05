@@ -4,31 +4,31 @@
 :root {
     /* Fondos y Superficies */
     --primary-color: #0D0D0E;
-    /* Fondo principal (Header, Nav) */
-   --background-color: #0D0D0E;
-    /* Fondo de la página */
+    /* Fondo principal */
+    --background-color: #0D0D0E;
+    /* Fondo de la página ni idea */
     --hover-color: #222227;
-    /* Fondo de hover en oscuro */
-   --card-bg: #161619;
-    /* Fondo de tarjetas/secciones */
+    /* Fondo de hover en oscuro No sé que cambia */
+    --card-bg: #161619;
+    /* Fondo de tarjetas/secciones No sé que cambia*/
     --input-bg: #1C1C21;
-    /* Fondo de inputs */
+    /* Fondo de inputs Barra Search */
     --container-color: #161619;
-    /* Fondo de contenedores con blur/gradiente */
-    --container-color-blur: #1e1e1fd9;
+    /* Fondo de contenedores con blur/gradiente Catube Social */
+    --container-color-blur: #0D0D0E;
     /* Fondo de contenedores con opacidad/blur */
-    --container-color-gradient: linear-gradient(90deg, #161619, #161619, #161619);
+    --container-color-gradient: linear-gradient(90deg, #0D0D0E, #0D0D0E, #0D0D0E);
 
     /* Texto y Bordes */
     --text-color: #FAFAFA;
     /* Color de texto principal (gris claro) */
     --border-color: #2d2d2e;
     /* Color de bordes y separadores */
-    --border-container-color: #3a3a3a;
+    --border-container-color: #0D0D0E;
     /* Borde más oscuro para contraste */
 
     /* Botones y Acento */
-    --btn: #FEB082;
+    --btn: #f08c52;
     /* Color de botón (verde/oliva) */
     --btn-dark: #FEA16B;
     /* Hover del botón */
@@ -69,7 +69,7 @@ body.light-mode {
     /* Gradiente de grises claros */
 
     /* Texto y Bordes */
-    --text-color: #FAFAFA;
+    --text-color: #f394cd;
     /* Negro muy oscuro para alto contraste */
     --border-color: #D0D0D0;
     /* Gris claro para separadores y bordes */
@@ -183,7 +183,7 @@ body.light-mode [class*="action-button profile-button"] {
 /* Botones de peligro (Rojo) */
 body.light-mode [class="discard-changes-create-video"],
 body.light-mode #root>div.right-menu-modal>div>div>section>div>button.delete-account-btn.soon {
-    background-color: #e96765 !important;
+    background-color: #f394cd !important;
     color: var(--primary-color) !important;
     /* Texto blanco sobre rojo */
 }

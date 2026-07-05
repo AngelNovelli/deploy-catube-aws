@@ -220,7 +220,7 @@ export function CatubeHeader({ logo, searchQuery, setSearchQuery }) {
                         {isAuthenticated && (
                             <button className="sr-header-createButton" onClick={() => openModal('createvideo')}>
                                 <span className="sr-header-createLabel">Create</span>
-                                <FaCirclePlus color={"#90B484"} size={28} />
+                                <FaCirclePlus color={"#f08c52"} size={28} />
                             </button>
                         )}
                         <div className="sr-header-userActions">
