@@ -268,3 +268,25 @@ h1, h2, h3, h4, h5, h6, p, span, label, a {
         margin-left: 0px;
     }
 }
+
+/* ===== PARCHE DE REPARACIÓN (MENÚ LATERAL DERECHO) ===== */
+.ts-nav-list {
+    list-style: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Asegura que los íconos del menú derecho se alineen bien */
+.ts-nav-link {
+    justify-content: flex-start !important;
+    width: 100% !important;
+}
+
+/* Darle un toque más vivo a los títulos de las secciones */
+.title, h3 {
+    color: var(--text-color) !important;
+    opacity: 0.9;
+}
