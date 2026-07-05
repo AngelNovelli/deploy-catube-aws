@@ -6,26 +6,49 @@ import { Channel } from './entities/channel.entity';
 import { User } from 'src/users/entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { console } from 'inspector';
 import * as sharp from 'sharp';
 
 @Injectable()
 export class ChannelsService {
     private s3: S3Client;
 
+    // --- URLs de Perfil Base para Supabase ---
+    private readonly STORAGE_FOLDER_PROFILE = 'profile';
+    private readonly STORAGE_FOLDER_BANNERS = 'banners';
+
     constructor(
         @InjectRepository(Channel)
         private channelRepository: Repository<Channel>,
     ) {
+        // Configuración de S3 compatible con Supabase Storage
         this.s3 = new S3Client({
-            region: process.env.AWS_REGION,
+            region: process.env.SUPABASE_REGION || 'us-east-1',
+            endpoint: process.env.SUPABASE_ENDPOINT, // Tu endpoint de Supabase
             credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+                accessKeyId: process.env.SUPABASE_ACCESS_KEY_ID || '',
+                secretAccessKey: process.env.SUPABASE_SECRET_ACCESS_KEY || '',
             },
+            forcePathStyle: true,
         });
     }
 
+    // Helper para armar la URL pública limpia de Supabase sin duplicar strings
+    private getPublicUrl(key: string): string {
+        const supabaseUrl = process.env.SUPABASE_ENDPOINT?.replace('/storage/v1/s3', '');
+        return `${supabaseUrl}/storage/v1/object/public/${process.env.SUPABASE_BUCKET_NAME}/${key}`;
+    }
+
+    // Helper para extraer la Key del Storage sin importar cómo venga la URL
+    private getStorageKey(url: string, folder: string): string {
+        if (url.includes(`/${folder}/`)) {
+            return `${folder}/${url.split(`/${folder}/`).pop()}`;
+        }
+        return url.split('/').pop() || '';
+    }
+
+    // ======================================================
+    // CREATE CHANNEL
+    // ======================================================
     async create(createChannelDto: CreateChannelDto, user: User): Promise<Channel> {
         const newChannel = this.channelRepository.create({
             channel_name: createChannelDto.channel_name,
@@ -34,9 +57,9 @@ export class ChannelsService {
             user: user,
         });
 
-        // Asignar avatar por defecto basado en la primera letra del nombre del canal
+        // Asignar avatar por defecto basado en la primera letra en Supabase
         const firstLetter = newChannel.channel_name.charAt(0).toUpperCase();
-        newChannel.photoUrl = `https://catube-uploads.s3.sa-east-1.amazonaws.com/profile/${firstLetter}.png`;
+        newChannel.photoUrl = this.getPublicUrl(`${this.STORAGE_FOLDER_PROFILE}/${firstLetter}.png`);
 
         return this.channelRepository.save(newChannel);
     }
@@ -59,7 +82,6 @@ export class ChannelsService {
         if (includeHidden) {
             return this.channelRepository.find({ relations: ['user'] });
         }
-        // Exclude hidden channels
         return this.channelRepository.find({
             where: { isHidden: false },
             relations: ['user'],
@@ -114,145 +136,147 @@ export class ChannelsService {
         return this.channelRepository.save(channel);
     }
 
-    //AWS S3
+    // ======================================================
+    // UPLOAD TO SUPABASE STORAGE (COMPATIBLE CON S3 V3)
+    // ======================================================
     private async uploadToS3(file: Express.Multer.File, folder: string): Promise<string> {
         try {
-            const bucketName = process.env.AWS_BUCKET_NAME!;
+            const bucketName = process.env.SUPABASE_BUCKET_NAME!;
 
-            // 1. Procesar y convertir la imagen a WebP
+            // 1. Procesar y convertir la imagen a WebP con Sharp
             const processedBuffer = await sharp(file.buffer)
                 .resize({ width: 800, withoutEnlargement: true })
                 .webp({ quality: 80 })
                 .toBuffer();
 
-            // 2. Determinar la nueva extensión y ContentType
+            // 2. Determinar el nuevo nombre de archivo
             const newMimeType = 'image/webp';
-            // Reemplazamos la extensión original por .webp
             const originalNameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
             const key = `${folder}/${uuidv4()}_${originalNameWithoutExt}.webp`;
 
-            console.log('Key que se usará en S3:', key);
+            console.log('Key que se usará en Supabase:', key);
 
-            const command = new PutObjectCommand({
+            await this.s3.send(new PutObjectCommand({
                 Bucket: bucketName,
                 Key: key,
                 Body: processedBuffer,
                 ContentType: newMimeType,
-            });
+            }));
 
-            await this.s3.send(command);
+            const publicUrl = this.getPublicUrl(key);
+            console.log('URL pública de Supabase generada:', publicUrl);
 
-            console.log('URL pública generada:', `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`);
-
-            return `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+            return publicUrl;
         } catch (err) {
-            console.error('S3 upload error:', err);
-            throw new InternalServerErrorException('Failed to process and upload file to S3');
+            console.error('Supabase upload error:', err);
+            throw new InternalServerErrorException('Failed to process and upload file to Supabase Storage');
         }
     }
 
+    // ======================================================
+    // UPLOAD BANNER
+    // ======================================================
     async uploadBanner(id: string, file: Express.Multer.File): Promise<Channel> {
         const channel = await this.channelRepository.findOneBy({ channel_id: id });
         if (!channel) throw new NotFoundException(`Canal con ID ${id} no encontrado.`);
 
-        // Eliminar banner anterior de S3 si existe
-        if (channel.bannerUrl && channel.bannerUrl.includes('amazonaws.com')) {
+        // Eliminar banner anterior de Supabase si existe
+        if (channel.bannerUrl && !channel.bannerUrl.startsWith('/assets/')) {
             try {
-                const oldKey = channel.bannerUrl.split('.com/')[1];
+                const oldKey = this.getStorageKey(channel.bannerUrl, this.STORAGE_FOLDER_BANNERS);
                 if (oldKey) {
                     await this.s3.send(new DeleteObjectCommand({
-                        Bucket: process.env.AWS_BUCKET_NAME!,
+                        Bucket: process.env.SUPABASE_BUCKET_NAME!,
                         Key: oldKey
                     }));
+                    console.log(`Banner anterior eliminado de Storage: ${oldKey}`);
                 }
             } catch (error) {
-                console.error('Error deleting old banner from S3:', error);
+                console.error('Error deleting old banner from Supabase:', error);
             }
         }
 
-        const bannerUrl = await this.uploadToS3(file, 'banners');
+        const bannerUrl = await this.uploadToS3(file, this.STORAGE_FOLDER_BANNERS);
         channel.bannerUrl = bannerUrl;
-
-        console.log('Banner actualizado en DB:', bannerUrl);
 
         return this.channelRepository.save(channel);
     }
 
+    // ======================================================
+    // UPLOAD PHOTO
+    // ======================================================
     async uploadPhoto(id: string, file: Express.Multer.File): Promise<Channel> {
         const channel = await this.channelRepository.findOneBy({ channel_id: id });
         if (!channel) throw new NotFoundException(`Canal con ID ${id} no encontrado.`);
 
-        //Lógica de eliminación modificada
-        const defaultPhotoPattern = /https:\/\/catube-uploads\.s3\.sa-east-1\.amazonaws\.com\/profile\/[a-zA-Z]\.png/;
+        // Patrón para no borrar por error los avatars estáticos de letras (A.png, B.png...)
+        const defaultPhotoPattern = /\/profile\/[A-Z]\.png/;
 
-        //Eliminar foto anterior de S3 si existe Y NO es la foto por defecto
-        if (
-            channel.photoUrl &&
-            channel.photoUrl.includes('amazonaws.com') &&
-            !defaultPhotoPattern.test(channel.photoUrl)
-        ) {
+        // Eliminar foto anterior si no es una por defecto
+        if (channel.photoUrl && !defaultPhotoPattern.test(channel.photoUrl)) {
             try {
-                const oldKey = channel.photoUrl.split('.com/')[1];
-
+                const oldKey = this.getStorageKey(channel.photoUrl, this.STORAGE_FOLDER_PROFILE);
                 if (oldKey) {
                     await this.s3.send(new DeleteObjectCommand({
-                        Bucket: process.env.AWS_BUCKET_NAME!,
+                        Bucket: process.env.SUPABASE_BUCKET_NAME!,
                         Key: oldKey
                     }));
-                    console.log(`Foto anterior eliminada de S3: ${oldKey}`);
+                    console.log(`Foto anterior personalizada eliminada de Storage: ${oldKey}`);
                 }
             } catch (error) {
-                console.error('Error al eliminar la foto anterior de S3:', error);
+                console.error('Error al eliminar la foto anterior de Supabase:', error);
             }
         }
-        // ----------------------------------------
 
-        const photoUrl = await this.uploadToS3(file, 'profile');
+        const photoUrl = await this.uploadToS3(file, this.STORAGE_FOLDER_PROFILE);
         channel.photoUrl = photoUrl;
-        console.log('Foto de perfil actualizada en DB:', photoUrl);
 
         return this.channelRepository.save(channel);
     }
 
-
+    // ======================================================
+    // SET DEFAULT PHOTO / BANNER
+    // ======================================================
     async setDefaultPhoto(id: string): Promise<Channel> {
         const channel = await this.findOneById(id);
 
-        // Eliminar foto anterior de S3 si existe
-        if (channel.photoUrl && channel.photoUrl.includes('amazonaws.com')) {
+        const defaultPhotoPattern = /\/profile\/[A-Z]\.png/;
+
+        // Eliminar foto personalizada previa de Storage si corresponde
+        if (channel.photoUrl && !defaultPhotoPattern.test(channel.photoUrl)) {
             try {
-                const oldKey = channel.photoUrl.split('.com/')[1];
+                const oldKey = this.getStorageKey(channel.photoUrl, this.STORAGE_FOLDER_PROFILE);
                 if (oldKey) {
                     await this.s3.send(new DeleteObjectCommand({
-                        Bucket: process.env.AWS_BUCKET_NAME!,
+                        Bucket: process.env.SUPABASE_BUCKET_NAME!,
                         Key: oldKey
                     }));
                 }
             } catch (error) {
-                console.error('Error deleting old photo from S3:', error);
+                console.error('Error deleting old custom photo from Storage:', error);
             }
         }
 
         const firstLetter = channel.channel_name.charAt(0).toUpperCase();
-        channel.photoUrl = `https://catube-uploads.s3.sa-east-1.amazonaws.com/profile/${firstLetter}.png`;
+        channel.photoUrl = this.getPublicUrl(`${this.STORAGE_FOLDER_PROFILE}/${firstLetter}.png`);
+        
         return this.channelRepository.save(channel);
     }
 
     async setDefaultBanner(id: string): Promise<Channel> {
         const channel = await this.findOneById(id);
 
-        // Eliminar banner anterior de S3 si existe
-        if (channel.bannerUrl && channel.bannerUrl.includes('amazonaws.com')) {
+        if (channel.bannerUrl && !channel.bannerUrl.startsWith('/assets/')) {
             try {
-                const oldKey = channel.bannerUrl.split('.com/')[1];
+                const oldKey = this.getStorageKey(channel.bannerUrl, this.STORAGE_FOLDER_BANNERS);
                 if (oldKey) {
                     await this.s3.send(new DeleteObjectCommand({
-                        Bucket: process.env.AWS_BUCKET_NAME!,
+                        Bucket: process.env.SUPABASE_BUCKET_NAME!,
                         Key: oldKey
                     }));
                 }
             } catch (error) {
-                console.error('Error deleting old banner from S3:', error);
+                console.error('Error deleting old banner from Storage:', error);
             }
         }
 
@@ -268,6 +292,6 @@ export class ChannelsService {
             .select('COUNT(video.id)', 'count')
             .getRawOne();
 
-        return parseInt(result.count);
+        return parseInt(result.count) || 0;
     }
 }

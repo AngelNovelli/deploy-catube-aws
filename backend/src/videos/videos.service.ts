@@ -24,8 +24,8 @@ export class VideosService {
   private readonly s3Client;
 
   // --- URLs de Miniatura por Defecto Globales ---
-  private readonly DEFAULT_VIDEO_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-video-thumbnail.png';
-  private readonly DEFAULT_SHORT_THUMBNAIL = 'https://catube-uploads.s3.sa-east-1.amazonaws.com/thumbnails/default-short-thumbnail.png';
+  private readonly DEFAULT_VIDEO_THUMBNAIL = 'https://ycbnrxhbpxdmsltxhfht.supabase.co/storage/v1/object/public/catube-uploads/thumbnails/default-video-thumbnail.png';
+  private readonly DEFAULT_SHORT_THUMBNAIL = 'https://ycbnrxhbpxdmsltxhfht.supabase.co/storage/v1/object/public/catube-uploads/thumbnails/default-short-thumbnail.png';
 
   constructor(
     @InjectRepository(Video)
