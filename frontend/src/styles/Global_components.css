@@ -27,17 +27,17 @@
     --border-container-color: #3a3a3a;
     /* Borde más oscuro para contraste */
 
-    /* Botones y Acento */
-    --btn: #90B484;
+  /* Botones y Acento */
+    --btn: #FEB082;
     /* Color de botón (verde/oliva) */
-    --btn-dark: #749269;
+    --btn-dark: #FEA16B;
     /* Hover del botón */
-    --accent-color: #90b484;
+    --accent-color: #B8734B;
     /* Color de acento */
 
     /* Scrollbar */
-    --scrollbar-thumb: #90b484;
-    --scrollbar-thumb-hover: #749269;
+    --scrollbar-thumb: #FEB082;
+    --scrollbar-thumb-hover: #FEA16B;
     --scrollbar-track: transparent;
 
     /* Generales */
@@ -120,16 +120,16 @@ body.light-mode {
     /* Borde más oscuro para contraste */
 
     /* Botones y Acento */
-    --btn: #90B484;
+    --btn: #FEB082;
     /* Color de botón (verde/oliva) */
-    --btn-dark: #749269;
+    --btn-dark: #FEA16B;
     /* Hover del botón */
-    --accent-color: #90b484;
+    --accent-color: #B8734B;
     /* Color de acento */
 
     /* Scrollbar */
-    --scrollbar-thumb: #90b484;
-    --scrollbar-thumb-hover: #749269;
+    --scrollbar-thumb: #FEB082;
+    --scrollbar-thumb-hover: #FEA16B;
     --scrollbar-track: transparent;
 
     /* Generales */
