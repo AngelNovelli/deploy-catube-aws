@@ -31,6 +31,13 @@
 .sr-header-symbol {
     width: 60px;
     height: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+}
+
+.sr-header-symbol:hover {
+    transform: scale(1.08); 
+    filter: drop-shadow(0 0 8px rgba(255, 119, 34, 0.4));
 }
 
 /* === Search bar === */

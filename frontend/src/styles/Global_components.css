@@ -458,9 +458,9 @@ button:hover {
 .ts-sidebar {
     width: 270px;
     position: fixed;
-    background-color: #1e1e1fd9;
+    background-color: #0D0D0E;
     backdrop-filter: blur(10px);
-    border: 1px solid #3a3a3a;
+    border: 1px solid #1a1919;
 }
 
 
