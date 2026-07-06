@@ -32,7 +32,7 @@
     /* Color de botón (verde/oliva) */
     --btn-dark: #FEA16B;
     /* Hover del botón */
-    --accent-color: #F5C4E1;
+    --accent-color: #E8A0C9;
     /* Color de acento */
 
     /* Scrollbar */
@@ -57,24 +57,21 @@ body.light-mode {
     /* Gris muy claro para el fondo de la página */
     --hover-color: #E6E6E6;
     /* Gris muy claro para el hover */
-    --card-bg: #FFFFFF;
-    /* Blanco puro para tarjetas/secciones */
-    --input-bg: #FFFFFF;
-    /* Fondo de inputs en blanco */
-    --container-color: #FFFFFF;
-    /* Fondo de contenedores en blanco */
-    --container-color-blur: #FFFFFfd9;
-    /* Fondo de blur semi-transparente blanco */
+    --card-bg: #FFFFFF; /*Fondo zona tarjetas */
+    --input-bg: #FFFFFF; /* Fondo search */
+    --container-color: #FFFFFF; /*Fondo botón micro, create*/
+    --container-color-blur: #FFFFFfd9; /* Fondo sidebar y friends*/
     --container-color-gradient: linear-gradient(90deg, #F0F0F0, #FFFFFF, #F0F0F0);
     /* Gradiente de grises claros */
 
     /* Texto y Bordes */
-    --text-color: #f394cd;
+    --text-color: #0D0D0E;
     /* Negro muy oscuro para alto contraste */
     --border-color: #D0D0D0;
     /* Gris claro para separadores y bordes */
     --border-container-color: #AAAAAA;
     /* Gris medio para bordes de contenedores */
+
 
     /* Botones y Acento (Se mantienen los colores de marca) */
     --btn: #FEB082;
@@ -155,7 +152,6 @@ body.light-mode .sr-header-right>div.sr-header-userActions {
     border: 1px solid var(--border-color) !important;
 }
 
-
 /* Login y Sign Up (Formulario principal con fondo claro) */
 body.light-mode #root>aside>div>form {
     background-color: var(--card-bg) !important;
@@ -163,7 +159,6 @@ body.light-mode #root>aside>div>form {
 }
 
 /* Botones con fondo de marca */
-
 
 body.light-mode .btn:hover,
 body.light-mode #root>aside>header>button:hover,
@@ -300,7 +295,6 @@ body.light-mode .ts-nav-link:hover {
     background-color: var(--scrollbar-thumb-hover);
 }
 
-
 .loading,
 .error {
     text-align: center;
@@ -312,18 +306,17 @@ body.light-mode .ts-nav-link:hover {
     color: #e96765;
 }
 
-
 @font-face {
-    font-family: garet;
-    src: url('../assets/fonts/garet/Garet-Book.woff2');
+    font-family: 'Lexend';
+    src: url('../assets/fonts/lexend/Lexend-Regular.ttf') format('truetype');
     font-weight: 400;
-    font-style: normal
+    font-style: normal;
 }
 
 * {
     margin: 0;
     padding: 0;
-    font-family: garet;
+    font-family: "lexend";
     box-sizing: border-box;
     transition: .3s
 }
@@ -336,7 +329,6 @@ a,
 body {
     color: var(--text-color)
 }
-
 
 .ts-nav-link,
 a {
@@ -383,7 +375,6 @@ hr {
 button:hover {
     cursor: pointer
 }
-
 
 .user-btn.logged-in {
     color: var(--btn);
@@ -462,8 +453,6 @@ button:hover {
     backdrop-filter: blur(10px);
     border: 1px solid #1a1919;
 }
-
-
 
 .user-button {
     background-color: var(--primary-color);
